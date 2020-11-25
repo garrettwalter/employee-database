@@ -42,44 +42,54 @@ connection.connect(function(err) {
       .then(function(answer) {
         switch (answer.action) {
         case "View all employees":
-          artistSearch();
+          employeeSearch();
           break;
   
         case "View all employees by department":
-          multiSearch();
+          departmentSearch();
           break;
   
         case "View all employees by manager":
-          rangeSearch();
+          managerSearch();
           break;
   
         case "Add employee":
-          songSearch();
+          addEmployee();
           break;
   
         case "Remove employee":
-          songAndAlbumSearch();
+          removeEmployee();
           break;
 
         case "Update employee role":
-          songAndAlbumSearch();
+          updateRole();
           break;
 
         case "Update employee manager":
-          songAndAlbumSearch();
+          updateManager();
           break;
 
         case "Add department":
-          songAndAlbumSearch();
+          addDepartment();
           break;
 
         case "Add manager":
-          songAndAlbumSearch();
+          addManager();
           break;
 
         case "Add role":
-          songAndAlbumSearch();
+          addRole();
           break;
         }
       });
+  }
+
+  function employeeSearch() {
+    connection.query("SELECT * FROM employee", function(err, res) {
+      if (err) throw err;
+  
+      // Log all results of the SELECT statement
+      console.table(res);
+      connection.end();
+    });
   }
