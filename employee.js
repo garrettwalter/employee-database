@@ -213,3 +213,55 @@ connection.connect(function(err) {
               );
         })
     }
+
+    function addRole() {
+        connection.query("SELECT * FROM department", function(err,res){
+            if (err) throw err;
+        inquirer
+        .prompt([
+            {
+                name: "title",
+                type: "input",
+                message: "New role name:"
+            },
+            {
+                name: "salary",
+                type: "input",
+                message: "New role salary:"
+            },
+            {
+                name: "department",
+                type: "rawlist",
+                choices: function() {
+                  var choiceArray = [];
+                  for (var i = 0; i < res.length; i++) {
+                    choiceArray.push(res[i].name);
+                  }
+                  return choiceArray;
+                },
+                message: "What department does this role fall into?"
+              }
+        ]).then(function(answer){
+            var chosenItem;
+        for (var i = 0; i < res.length; i++) {
+          if (res[i].name === answer.department) {
+            chosenItem = res[i];
+          }
+        }
+            connection.query(
+                "INSERT INTO roles SET ?",
+                {
+                  title: answer.title,
+                  salary: answer.salary,
+                  department_id: chosenItem.id
+                },
+                function(err) {
+                  if (err) throw err;
+                  console.log("Role added!");
+                  // re-prompt the user for if they want to bid or post
+                  runSearch();
+                }
+              );
+        })
+    })
+    }
