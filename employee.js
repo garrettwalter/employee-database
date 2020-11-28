@@ -48,23 +48,23 @@ connection.connect(function(err) {
         case "View all employees by department":
           departmentSearch();
           break;
-  
-        case "View all employees by manager":
+//   needs to be done
+        case "View all employees by manager": 
           managerSearch();
           break;
   
         case "Add employee":
           addEmployee();
           break;
-  
+//  needs to be done 
         case "Remove employee":
           removeEmployee();
           break;
-
+// needs to be done
         case "Update employee role":
           updateRole();
           break;
-
+// needs to be done
         case "Update employee manager":
           updateManager();
           break;
@@ -72,7 +72,7 @@ connection.connect(function(err) {
         case "Add department":
           addDepartment();
           break;
-
+// needs to be done
         case "Add manager":
           addManager();
           break;
