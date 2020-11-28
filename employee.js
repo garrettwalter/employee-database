@@ -85,11 +85,107 @@ connection.connect(function(err) {
   }
 
   function employeeSearch() {
-    connection.query("SELECT * FROM employee", function(err, res) {
+    connection.query("SELECT employee.first_name, employee.last_name, roles.title,roles.salary,roles.department_id,department.name FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id;", function(err, res) {
       if (err) throw err;
   
       // Log all results of the SELECT statement
       console.table(res);
-      connection.end();
+      runSearch();
+    });
+  }
+
+  function departmentSearch() {
+    connection.query("SELECT * FROM department;", function(err, res) {
+      if (err) throw err;
+        
+      inquirer
+      .prompt([
+        {
+            name: "department",
+            type: "rawlist",
+            choices: function() {
+              var choiceArray = [];
+              for (var i = 0; i < res.length; i++) {
+                choiceArray.push(res[i].name);
+              }
+              return choiceArray;
+            },
+            message: "What department?"
+          }
+      ]).then (function(answer){
+        var chosenItem;
+        for (var i = 0; i < res.length; i++) {
+          if (res[i].name === answer.department) {
+            chosenItem = res[i];
+          }
+        }
+        const query = "SELECT employee.first_name, employee.last_name, roles.title,roles.salary,roles.department_id,department.name FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id WHERE ?";
+        connection.query(query, {department_id: chosenItem.id},function(err,res) {
+              if (err) throw err;
+              console.table(res);
+              // re-prompt the user 
+              runSearch();
+            }
+          );              
+      })
+    });
+   }
+
+  function addEmployee() {
+    connection.query("SELECT * FROM roles", function(err,res){
+        if (err) throw err;
+        // connection.end();
+    inquirer
+    .prompt([
+      {
+        name: "first_name",
+        type: "input",
+        message: "First Name:"
+      },
+      {
+        name: "last_name",
+        type: "input",
+        message: "Last Name:"
+      },
+      {
+        name: "role",
+        type: "rawlist",
+        choices: function() {
+          var choiceArray = [];
+          for (var i = 0; i < res.length; i++) {
+            choiceArray.push(res[i].title);
+          }
+          return choiceArray;
+        },
+        message: "What role does this employee fill?"
+      }
+    //   {
+    //     name: "manager",
+    //     type: "input",
+    //     message: "Manager:",
+    //   }
+    ]).then(function(answer) {
+        // when finished prompting, insert a new item into the db with that info
+        var chosenItem;
+        for (var i = 0; i < res.length; i++) {
+          if (res[i].title === answer.role) {
+            chosenItem = res[i];
+          }
+        }
+        connection.query(
+          "INSERT INTO employee SET ?",
+          {
+            first_name: answer.first_name,
+            last_name: answer.last_name,
+            role_id: chosenItem.id,
+          },
+          function(err) {
+            if (err) throw err;
+            console.log("Employee added!");
+            // re-prompt the user for if they want to bid or post
+            runSearch();
+          }
+        );
+      });
     });
   }
