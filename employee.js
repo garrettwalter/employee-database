@@ -189,3 +189,27 @@ connection.connect(function(err) {
       });
     });
   }
+
+    function addDepartment() {
+        inquirer
+        .prompt([
+            {
+                name: "name",
+                type: "input",
+                message: "New department name:"
+            }
+        ]).then(function(answer){
+            connection.query(
+                "INSERT INTO department SET ?",
+                {
+                  name: answer.name,
+                },
+                function(err) {
+                  if (err) throw err;
+                  console.log("Department added!");
+                  // re-prompt the user for if they want to bid or post
+                  runSearch();
+                }
+              );
+        })
+    }
